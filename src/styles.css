@@ -1,1 +1,122 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Design System */
+:root {
+  /* Brand Colors - Premium Orange & Dark Brown Theme */
+  --primary-500: #E85D04;     /* Vibrant Orange */
+  --primary-600: #D04F00;     /* Darker Orange for hover */
+  --primary-100: #FFF0E6;     /* Light Orange bg */
+  
+  --secondary-900: #1A120B;   /* Deep Dark Brown/Black */
+  --secondary-800: #2C241D;   /* Lighter Dark Brown */
+  --secondary-100: #F5F1EE;   /* Off-white/Beige background */
+  
+  /* Semantic Colors */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
+  
+  /* Text Colors */
+  --text-dark: #1F2937;
+  --text-medium: #4B5563;
+  --text-light: #9CA3AF;
+  --text-white: #FFFFFF;
+  
+  /* Typography */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  
+  /* Spacing & Borders */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  
+  /* Elevation/Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* Base Reset & Typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  background-color: var(--secondary-100);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s;
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-500);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-600);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  border: 1px solid var(--secondary-200);
+  background: transparent;
+  color: var(--text-dark);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-medium);
+}
+.btn-ghost:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--primary-500);
+}
+
+/* Dashboard Card Style */
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0,0,0,0.05);
+}
