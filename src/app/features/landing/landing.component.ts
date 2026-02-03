@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
-    selector: 'app-landing',
-    standalone: true,
-    imports: [CommonModule, RouterLink],
-    template: `
+  selector: 'app-landing',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  template: `
     <div class="landing-page">
       <!-- Hero Section -->
       <section class="hero-section container">
@@ -22,7 +22,7 @@ import { RouterLink } from '@angular/router';
                <div class="mock-ui-card">
                  <div class="mock-header">Mount 65" TV</div>
                  <div class="mock-sub">Need help mounting a TV on drywall...</div>
-                 <div class="mock-price">$80 - $120</div>
+                 <div class="mock-price">₹300 - ₹400</div>
                </div>
             </div>
 
@@ -40,11 +40,11 @@ import { RouterLink } from '@angular/router';
                  <div class="mock-header">Nearby Opportunities</div>
                  <div class="mock-item">
                     <span>Leaky Faucet Repair</span>
-                    <span class="price">$150</span>
+                    <span class="price">  ₹450</span>
                  </div>
                  <div class="mock-item">
                     <span>Furniture Assembly</span>
-                    <span class="price">$90</span>
+                    <span class="price">  ₹500</span>
                  </div>
                </div>
             </div>
@@ -70,7 +70,7 @@ import { RouterLink } from '@angular/router';
             <div class="label">Avg. Bid Time</div>
           </div>
           <div class="stat-item">
-            <div class="value">$2M+</div>
+            <div class="value">₹2M+</div>
             <div class="label">Paid to Workers</div>
           </div>
         </div>
@@ -156,7 +156,7 @@ import { RouterLink } from '@angular/router';
       </section>
     </div>
   `,
-    styles: [`
+  styles: [`
     .landing-page {
       display: flex;
       flex-direction: column;
@@ -243,7 +243,7 @@ import { RouterLink } from '@angular/router';
       box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
       position: absolute;
       width: 80%;
-      right: -10%;
+      right: -35%;
       top: 10%;
       transform: rotate(-3deg);
     }
@@ -460,10 +460,17 @@ import { RouterLink } from '@angular/router';
 
     /* Bottom CTA */
     .bottom-cta {
+      padding: 2rem 0 6rem;
+    }
+
+    .cta-content {
       background-color: var(--secondary-900);
       color: white;
-      padding: 5rem 0;
       text-align: center;
+      padding: 4rem 2rem;
+      border-radius: var(--radius-xl);
+      position: relative;
+      overflow: hidden;
     }
 
     .cta-content h2 { font-size: 2.5rem; margin-bottom: 1rem; }
@@ -479,39 +486,39 @@ import { RouterLink } from '@angular/router';
   `]
 })
 export class LandingComponent {
-    // Mock Data
-    urgentTasks = [
-        {
-            title: 'Emergency Pipe Leak Repair',
-            location: 'Brooklyn, NY',
-            timeAgo: '15m ago',
-            description: 'Water is dripping rapidly under the sink. Need someone immediately to stop the leak.',
-            budget: '$100 - $150',
-            isUrgent: true
-        },
-        {
-            title: 'Move Heavy Sofa Up Stairs',
-            location: 'Queens, NY',
-            timeAgo: '25m ago',
-            description: 'Need 2 strong people to help move a 3-seater sofa to the 3rd floor. No elevator.',
-            budget: '$60 - $90',
-            isUrgent: true
-        },
-        {
-            title: 'Front Door Lock Jammed',
-            location: 'Hoboken, NJ',
-            timeAgo: '42m ago',
-            description: 'Key broke inside the lock. Locked out of apartment. Need locksmith ASAP.',
-            budget: '$120 - $200',
-            isUrgent: true
-        },
-        {
-            title: 'Garage Cleaning & Organizing',
-            location: 'Staten Island, NY',
-            timeAgo: '1h ago',
-            description: 'Help organize boxes and clean out dust. Estimated 3 hours of work.',
-            budget: '$15/hr',
-            isUrgent: false
-        }
-    ];
+  // Mock Data
+  urgentTasks = [
+    {
+      title: 'Emergency Pipe Leak Repair',
+      location: 'Chennai, Tamil Nadu',
+      timeAgo: '15m ago',
+      description: 'Water is dripping rapidly under the sink. Need someone immediately to stop the leak.',
+      budget: '₹400 - ₹500',
+      isUrgent: true
+    },
+    {
+      title: 'Move Heavy Sofa Up Stairs',
+      location: 'Kochi, Kerala',
+      timeAgo: '25m ago',
+      description: 'Need 2 strong people to help move a 3-seater sofa to the 3rd floor. No elevator.',
+      budget: '₹600 - ₹800',
+      isUrgent: true
+    },
+    {
+      title: 'Front Door Lock Jammed',
+      location: 'Kolkata, West Bengal',
+      timeAgo: '42m ago',
+      description: 'Key broke inside the lock. Locked out of apartment. Need locksmith ASAP.',
+      budget: '₹300 - ₹400',
+      isUrgent: true
+    },
+    {
+      title: 'Garage Cleaning & Organizing',
+      location: 'Thiruvananthapuram, Kerala',
+      timeAgo: '1h ago',
+      description: 'Help organize boxes and clean out dust. Estimated 3 hours of work.',
+      budget: '₹200/hr',
+      isUrgent: false
+    }
+  ];
 }
