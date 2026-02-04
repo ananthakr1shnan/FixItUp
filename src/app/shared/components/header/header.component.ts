@@ -3,15 +3,15 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-header',
-    standalone: true,
-    imports: [CommonModule, RouterLink, RouterLinkActive],
-    template: `
+  selector: 'app-header',
+  standalone: true,
+  imports: [CommonModule, RouterLink, RouterLinkActive],
+  template: `
     <header class="header">
       <div class="container header-content">
         <!-- Logo -->
         <a routerLink="/" class="logo">
-          <div class="logo-icon"></div>
+          <i class="bi bi-check-square-fill logo-icon"></i>
           <span class="logo-text">FixItUp</span>
         </a>
 
@@ -26,7 +26,7 @@ import { CommonModule } from '@angular/common';
         <div class="header-actions">
           <ng-container *ngIf="isPublic; else authenticatedView">
             <a routerLink="/login" class="btn btn-ghost">Sign In</a>
-            <a routerLink="/register" class="btn btn-primary">Post a Task</a>
+            <a routerLink="/register" class="btn btn-primary">Register</a>
           </ng-container>
           
           <ng-template #authenticatedView>
@@ -42,7 +42,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </header>
   `,
-    styles: [`
+  styles: [`
     .header {
       background-color: white;
       border-bottom: 1px solid var(--secondary-200, #e5e7eb);
@@ -72,10 +72,9 @@ import { CommonModule } from '@angular/common';
     }
 
     .logo-icon {
-      width: 32px;
-      height: 32px;
-      background-color: var(--primary-500);
-      border-radius: 8px;
+      font-size: 1.75rem;
+      color: var(--primary-500);
+      line-height: 1;
     }
 
     .nav-links {
@@ -115,5 +114,5 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class HeaderComponent {
-    @Input() isPublic = false;
+  @Input() isPublic = false;
 }

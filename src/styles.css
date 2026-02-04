@@ -1,40 +1,52 @@
 /* Global Design System */
 :root {
-  /* Brand Colors - Premium Orange & Dark Brown Theme */
-  --primary-500: #E85D04;     /* Vibrant Orange */
-  --primary-600: #D04F00;     /* Darker Orange for hover */
-  --primary-100: #FFF0E6;     /* Light Orange bg */
-  
-  --secondary-900: #1A120B;   /* Deep Dark Brown/Black */
-  --secondary-800: #2C241D;   /* Lighter Dark Brown */
-  --secondary-100: #F5F1EE;   /* Off-white/Beige background */
-  
+  /* Brand Colors - Terracotta & Beige Theme */
+  --primary-500: #8D3B23;
+  /* Terracotta/Burnt Sienna */
+  --primary-600: #702E1B;
+  /* Darker Terracotta */
+  --primary-100: #F3EFEA;
+  /* Light Beige bg */
+
+  --secondary-900: #2C241D;
+  /* Dark Brown Text */
+  --secondary-800: #4A3B32;
+  /* Medium Brown */
+  --secondary-400: #9CA3AF;
+  /* Grey Text */
+  --secondary-200: #E5E0DC;
+  /* Borders */
+  --secondary-100: #F3EFEA;
+  /* Site Background */
+
   /* Semantic Colors */
   --success: #10B981;
-  --warning: #F59E0B;
+  --warning: #D97706;
+  /* Match the Top Rated badge color */
   --danger: #EF4444;
-  --info: #3B82F6;
-  
+  --info: #0EA5E9;
+
   /* Text Colors */
-  --text-dark: #1F2937;
-  --text-medium: #4B5563;
-  --text-light: #9CA3AF;
+  --text-dark: #2C241D;
+  --text-medium: #5D544F;
+  --text-light: #8C8581;
   --text-white: #FFFFFF;
-  
+
   /* Typography */
   --font-display: 'Outfit', sans-serif;
   --font-body: 'Inter', sans-serif;
-  
+
   /* Spacing & Borders */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
-  
+
   /* Elevation/Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+  /* Softer shadow */
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
 }
 
 /* Base Reset & Typography */
@@ -52,7 +64,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 600;
   line-height: 1.2;
@@ -107,8 +124,9 @@ a {
   background: transparent;
   color: var(--text-medium);
 }
+
 .btn-ghost:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   color: var(--primary-500);
 }
 
@@ -118,5 +136,5 @@ a {
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }

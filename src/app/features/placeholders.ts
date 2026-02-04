@@ -13,20 +13,6 @@ import { Component } from '@angular/core';
 export class LandingComponent { }
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    template: `<div class="container"><h2 class="mt-5">Login Placeholder</h2></div>`
-})
-export class LoginComponent { }
-
-@Component({
-    selector: 'app-register',
-    standalone: true,
-    template: `<div class="container"><h2 class="mt-5">Register Placeholder</h2></div>`
-})
-export class RegisterComponent { }
-
-@Component({
     selector: 'app-customer-dashboard',
     standalone: true,
     template: `<h2>Customer Dashboard Placeholder</h2>`

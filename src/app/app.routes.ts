@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component';
-import { LoginComponent, RegisterComponent } from './features/placeholders';
 import { LandingComponent } from './features/landing/landing.component';
 import { CustomerDashboardComponent } from './features/customer/dashboard/dashboard.component';
 import { WorkerDashboardComponent } from './features/worker/dashboard/dashboard.component';
+import { LoginComponent } from './features/auth/login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
 
 export class FeatureComponents {
     static Landing = LandingComponent;
@@ -31,8 +32,17 @@ export const routes: Routes = [
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: FeatureComponents.CustomerDashboard },
-            { path: 'worker-dashboard', component: FeatureComponents.WorkerDashboard },
-            { path: 'my-jobs', component: FeatureComponents.WorkerDashboard },
+            {
+                path: 'worker-dashboard',
+                loadComponent: () => import('./features/worker/dashboard/dashboard.component').then(m => m.WorkerDashboardComponent)
+            },
+            {
+                path: 'admin-dashboard',
+                loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent)
+            },
+            {
+                path: 'my-tasks', component: FeatureComponents.WorkerDashboard
+            },
             { path: 'find-work', component: FeatureComponents.WorkerDashboard },
         ]
     },

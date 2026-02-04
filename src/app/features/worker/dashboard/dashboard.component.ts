@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-worker-dashboard',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+   selector: 'app-worker-dashboard',
+   standalone: true,
+   imports: [CommonModule, FormsModule],
+   template: `
     <div class="dashboard-container">
       <header class="page-header">
          <div>
@@ -26,9 +27,9 @@ import { CommonModule } from '@angular/common';
           <div class="section-header">
              <h2>Nearby Opportunities</h2>
              <div class="filters">
-               <button class="filter-btn active">Nearest</button>
-               <button class="filter-btn">Highest Pay</button>
-               <button class="filter-btn">Urgent</button>
+               <button class="filter-btn" [class.active]="currentFilter === 'Nearest'" (click)="setFilter('Nearest')">Nearest</button>
+               <button class="filter-btn" [class.active]="currentFilter === 'Highest Pay'" (click)="setFilter('Highest Pay')">Highest Pay</button>
+               <button class="filter-btn" [class.active]="currentFilter === 'Urgent'" (click)="setFilter('Urgent')">Urgent</button>
              </div>
           </div>
 
@@ -49,15 +50,15 @@ import { CommonModule } from '@angular/common';
                <p class="description">{{ job.description }}</p>
                <p class="tools-req" *ngIf="job.toolsRequired">Tools not provided.</p>
 
-               <!-- Bidding Interface (Expanded for top item or interactive) -->
+               <!-- Bidding Interface -->
                <div class="bid-interface">
                   <div class="slider-container">
                      <label>Your Bid</label>
-                     <input type="range" min="50" max="200" [value]="job.suggestedBid" class="bid-slider">
+                     <input type="range" min="0" [max]="job.budgetMax" [(ngModel)]="job.suggestedBid" class="bid-slider">
                   </div>
                   <div class="bid-input-group">
-                     <span class="currency">$</span>
-                     <input type="number" [value]="job.suggestedBid" class="bid-input">
+                     <span class="currency">₹</span>
+                     <input type="number" [(ngModel)]="job.suggestedBid" class="bid-input">
                   </div>
                   <button class="btn btn-primary">Submit Bid</button>
                </div>
@@ -89,7 +90,7 @@ import { CommonModule } from '@angular/common';
               </div>
               <div class="earnings-summary">
                  <span class="period">This Week</span>
-                 <div class="amount">$845.00</div>
+                 <div class="amount">₹12,450</div>
                  <div class="trend positive">+12% from last week</div>
               </div>
               <div class="stats-list">
@@ -99,7 +100,7 @@ import { CommonModule } from '@angular/common';
                  </div>
                  <div class="stat-row">
                     <span>Pending Payment</span>
-                    <span>$120.00</span>
+                    <span>₹2,400</span>
                  </div>
               </div>
            </div>
@@ -113,7 +114,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
-    styles: [`
+   styles: [`
     .dashboard-container { padding-bottom: 2rem; }
     
     .page-header {
@@ -228,7 +229,7 @@ import { CommonModule } from '@angular/common';
        border: 1px solid var(--secondary-200); 
        border-radius: 4px; 
        padding: 0.5rem 0.75rem;
-       width: 100px;
+       width: 110px;
     }
     .currency { color: var(--text-light); margin-right: 0.25rem; font-size: 0.9rem; }
     .bid-input { 
@@ -295,33 +296,45 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class WorkerDashboardComponent {
-    jobs = [
-        {
-            title: 'Emergency Pipe Leak Repair',
-            distance: '0.8 mi',
-            isUrgent: true,
-            budget: '$100 - $150',
-            description: 'Water is dripping rapidly under the kitchen sink. Need someone immediately to stop the leak.',
-            toolsRequired: true,
-            suggestedBid: 120
-        },
-        {
-            title: 'Backyard Fence Painting',
-            distance: '1.2 mi',
-            isUrgent: false,
-            budget: '$200 - $300',
-            description: 'Wooden fence needs two coats of paint. Paint provided, please bring brushes and rollers. Approx 40ft length.',
-            toolsRequired: true,
-            suggestedBid: 240
-        },
-        {
-            title: 'IKEA Furniture Assembly',
-            distance: '3.5 mi',
-            isUrgent: false,
-            budget: '$60 - $80',
-            description: 'Need help assembling a Pax Wardrobe system. I have tools but an extra drill would help.',
-            toolsRequired: false,
-            suggestedBid: 70
-        }
-    ];
+   currentFilter = 'Nearest';
+
+   jobs: any[] = [];
+   allJobs: any[] = []; // Store fetched jobs
+
+   constructor(private taskService: TaskService, public authService: AuthService) { }
+
+   async ngOnInit() {
+      const user = this.authService.currentUser();
+      if (user) {
+         this.allJobs = await this.taskService.getNearbyTasks(user.id);
+         this.applyFilter();
+      }
+   }
+
+   setFilter(filter: string) {
+      this.currentFilter = filter;
+      this.applyFilter();
+   }
+
+   applyFilter() {
+      let tempJobs = [...this.allJobs];
+
+      switch (this.currentFilter) {
+         case 'Nearest':
+            // Distance sorting requires distance value in number. 
+            // My mock task service added proper string 'distance', but we might need real int.
+            // For now, let's skip sort or assume distance parsing
+            tempJobs.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+            break;
+         case 'Highest Pay':
+            tempJobs.sort((a, b) => b.minBudget - a.minBudget);
+            break;
+         case 'Urgent':
+            tempJobs = this.allJobs.filter(job => job.isUrgent);
+            break;
+      }
+      this.jobs = tempJobs;
+   }
 }
+import { TaskService } from '../../../core/services/task.service';
+import { AuthService } from '../../../core/services/auth.service';

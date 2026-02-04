@@ -5,10 +5,10 @@ import { HeaderComponent } from '../../shared/components/header/header.component
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 
 @Component({
-    selector: 'app-main-layout',
-    standalone: true,
-    imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarComponent],
-    template: `
+  selector: 'app-main-layout',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, SidebarComponent],
+  template: `
     <div class="layout-wrapper">
       <app-sidebar class="sidebar"></app-sidebar>
       <main class="main-content">
@@ -20,7 +20,7 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
       </main>
     </div>
   `,
-    styles: [`
+  styles: [`
     .layout-wrapper {
       display: flex;
       min-height: 100vh;
