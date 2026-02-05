@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LocationService } from '../../../core/services/location.service';
 
 @Component({
   selector: 'app-register',
@@ -97,6 +98,43 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
             >
              <div class="error-message" *ngIf="isFieldInvalid('password')">
               Password must be at least 6 characters.
+            </div>
+          </div>
+
+          <!-- Location Selection - Only for Workers -->
+          <div class="form-row" *ngIf="selectedRole === 'Worker'">
+            <div class="form-group">
+              <label for="state">State</label>
+              <select 
+                id="state" 
+                formControlName="state" 
+                class="form-control"
+                (change)="onStateChange()"
+                [class.is-invalid]="isFieldInvalid('state')"
+              >
+                <option value="">Select State</option>
+                <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+              </select>
+              <div class="error-message" *ngIf="isFieldInvalid('state')">
+                Please select a state.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City</label>
+              <select 
+                id="city" 
+                formControlName="city" 
+                class="form-control"
+                [disabled]="!registerForm.value.state"
+                [class.is-invalid]="isFieldInvalid('city')"
+              >
+                <option value="">Select City</option>
+                <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+              </select>
+              <div class="error-message" *ngIf="isFieldInvalid('city')">
+                Please select a city.
+              </div>
             </div>
           </div>
 
@@ -197,6 +235,13 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
        border-color: var(--primary-500);
     }
 
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
     .form-group { margin-bottom: 1.5rem; }
     
     label {
@@ -260,11 +305,15 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
     }
   `]
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   isLoading = false;
   selectedRole: 'Customer' | 'Worker' = 'Customer';
   isSubmitted = false;
+
+  // Location data
+  states: string[] = [];
+  cities: string[] = [];
 
   categories = [
     { id: 1, name: 'Plumbing' },
@@ -281,13 +330,30 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private locationService: LocationService
   ) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      state: [''],
+      city: ['']
     });
+  }
+
+  ngOnInit() {
+    this.states = this.locationService.getStates();
+  }
+
+  onStateChange() {
+    const state = this.registerForm.value.state;
+    if (state) {
+      this.cities = this.locationService.getCities(state);
+      this.registerForm.patchValue({ city: '' });
+    } else {
+      this.cities = [];
+    }
   }
 
   toggleSkill(id: number) {
@@ -300,6 +366,18 @@ export class RegisterComponent {
 
   setRole(role: 'Customer' | 'Worker') {
     this.selectedRole = role;
+    
+    // Update validation based on role
+    if (role === 'Worker') {
+      this.registerForm.get('state')?.setValidators(Validators.required);
+      this.registerForm.get('city')?.setValidators(Validators.required);
+    } else {
+      this.registerForm.get('state')?.clearValidators();
+      this.registerForm.get('city')?.clearValidators();
+    }
+    
+    this.registerForm.get('state')?.updateValueAndValidity();
+    this.registerForm.get('city')?.updateValueAndValidity();
   }
 
   isFieldInvalid(field: string): boolean {
@@ -317,13 +395,23 @@ export class RegisterComponent {
 
       this.isLoading = true;
 
-      const userData = {
+      const userData: any = {
         fullName: this.registerForm.value.fullName,
         email: this.registerForm.value.email,
         password: this.registerForm.value.password,
         role: this.selectedRole,
         categoryIds: this.selectedRole === 'Worker' ? this.selectedCategoryIds : []
       };
+
+      // Only include state and city for workers
+      if (this.selectedRole === 'Worker') {
+        userData.state = this.registerForm.value.state;
+        userData.city = this.registerForm.value.city;
+      } else {
+        // For customers, send empty strings or default values
+        userData.state = '';
+        userData.city = '';
+      }
 
       const success = await this.authService.register(userData);
       this.isLoading = false;

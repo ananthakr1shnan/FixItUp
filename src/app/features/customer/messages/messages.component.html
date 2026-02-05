@@ -1,0 +1,46 @@
+<div class="messages-container">
+  <header class="page-header">
+    <h2>Messages</h2>
+  </header>
+
+  <!-- Conversations List -->
+  <div *ngIf="!selectedConversation" class="conversations-wrapper">
+    <div *ngIf="conversations.length === 0" class="empty-state">
+      <p>No messages yet</p>
+    </div>
+
+    <div class="conversations-list">
+      <div 
+        *ngFor="let conversation of conversations" 
+        class="conversation-card"
+        (click)="selectConversation(conversation)">
+        <div class="conversation-avatar">
+          <div class="avatar-circle">{{ conversation.otherUser.name.charAt(0) }}</div>
+        </div>
+        <div class="conversation-details">
+          <div class="conversation-header">
+            <h3>{{ conversation.otherUser.name }}</h3>
+            <span class="time">{{ formatTime(conversation.lastMessageTime) }}</span>
+          </div>
+          <p class="task-title">{{ conversation.taskTitle }}</p>
+          <p class="last-message">{{ conversation.lastMessage }}</p>
+        </div>
+        <div *ngIf="conversation.unreadCount > 0" class="unread-badge">
+          {{ conversation.unreadCount }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat View -->
+  <div *ngIf="selectedConversation" class="chat-wrapper">
+    <button class="back-btn" (click)="backToList()">
+      <i class="bi bi-arrow-left"></i> Back to Messages
+    </button>
+    <app-chat 
+      [taskId]="selectedConversation.taskId"
+      [otherUserId]="selectedConversation.otherUser.id"
+      [chatTitle]="'Chat with ' + selectedConversation.otherUser.name">
+    </app-chat>
+  </div>
+</div>

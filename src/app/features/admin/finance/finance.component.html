@@ -1,0 +1,91 @@
+<div class="finance-container">
+  <header class="page-header">
+    <h2>Finance Management</h2>
+    <div class="filters">
+      <select [(ngModel)]="filterBy" class="filter-select">
+        <option value="">All Time</option>
+        <option value="day">By Day</option>
+        <option value="month">By Month</option>
+      </select>
+      <input 
+        *ngIf="filterBy" 
+        [(ngModel)]="filterDate" 
+        [type]="filterBy === 'day' ? 'date' : 'month'" 
+        class="filter-input"
+      />
+      <button *ngIf="filterBy" class="btn btn-primary" (click)="applyFilter()">Apply</button>
+      <button *ngIf="filterBy" class="btn btn-outline" (click)="clearFilter()">Clear</button>
+    </div>
+  </header>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card revenue">
+      <div class="card-icon">💵</div>
+      <div class="card-content">
+        <div class="card-label">Total Revenue</div>
+        <div class="card-value">\${{summary.totalRevenue.toFixed(2)}}</div>
+      </div>
+    </div>
+
+    <div class="summary-card pending">
+      <div class="card-icon">⏳</div>
+      <div class="card-content">
+        <div class="card-label">Pending Amount</div>
+        <div class="card-value">\${{summary.pendingAmount.toFixed(2)}}</div>
+      </div>
+    </div>
+
+    <div class="summary-card transactions">
+      <div class="card-icon">📊</div>
+      <div class="card-content">
+        <div class="card-label">Total Transactions</div>
+        <div class="card-value">{{summary.totalTransactions}}</div>
+      </div>
+    </div>
+
+    <div class="summary-card completed">
+      <div class="card-icon">✅</div>
+      <div class="card-content">
+        <div class="card-label">Completed</div>
+        <div class="card-value">{{summary.completedTransactions}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments Table -->
+  <section class="section">
+    <div class="section-header">
+      <h3>All Transactions</h3>
+    </div>
+
+    <div *ngIf="payments.length === 0" class="empty-state">
+      <p>No transactions found</p>
+    </div>
+
+    <div class="finance-table" *ngIf="payments.length > 0">
+      <div class="table-header">
+        <div class="col">Task</div>
+        <div class="col">Customer</div>
+        <div class="col">Worker</div>
+        <div class="col">Amount</div>
+        <div class="col">Status</div>
+        <div class="col">Date</div>
+        <div class="col">Transaction ID</div>
+      </div>
+      <div class="table-row" *ngFor="let payment of payments">
+        <div class="col">{{payment.taskTitle}}</div>
+        <div class="col">{{payment.customerName}}</div>
+        <div class="col">{{payment.workerName}}</div>
+        <div class="col amount">\${{payment.amount.toFixed(2)}}</div>
+        <div class="col">
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(payment.status)">
+            {{payment.status}}
+          </span>
+        </div>
+        <div class="col">{{formatDate(payment.completedAt || payment.createdAt)}}</div>
+        <div class="col transaction-id">{{payment.transactionId || '-'}}</div>
+      </div>
+    </div>
+  </section>
+</div>

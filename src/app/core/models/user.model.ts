@@ -4,6 +4,8 @@ export interface User {
     email: string;
     passwordHash?: string; // Optional on frontend usually
     role: 'Customer' | 'Worker' | 'Admin';
+    state: string;
+    city: string;
     isAcceptingJobs: boolean;
     trustScore: number;
     jobCompletionRate: number;

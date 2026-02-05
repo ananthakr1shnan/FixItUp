@@ -1,0 +1,145 @@
+<div class="payments-container">
+  <header class="page-header">
+    <h2>Payments & Billing</h2>
+    <button class="btn btn-outline">Download Statement</button>
+  </header>
+
+  <div class="layout-grid">
+    <!-- Main Column -->
+    <div class="main-column">
+      
+      <!-- Saved Cards -->
+      <section class="section">
+        <div class="section-header">
+          <h3>Saved Cards</h3>
+          <a href="#" class="link-manage">Manage</a>
+        </div>
+        
+        <div class="cards-row">
+          <!-- Dark Card -->
+          <div class="payment-card dark">
+            <div class="card-chip"></div>
+            <div class="card-number">•••• •••• •••• 4289</div>
+            <div class="card-footer">
+              <span>DAVID MILLER</span>
+              <span>09/25</span>
+            </div>
+          </div>
+
+          <!-- Terracotta Card -->
+          <div class="payment-card terracotta">
+            <div class="card-chip"></div>
+            <div class="card-number">•••• •••• •••• 8832</div>
+            <div class="card-footer">
+              <span>DAVID MILLER</span>
+              <span>12/26</span>
+            </div>
+          </div>
+
+          <!-- Add New Card -->
+          <div class="payment-card add-new">
+            <span>+ Add New Card</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pending Payments -->
+      <section class="section">
+        <div class="section-header">
+          <h3>Pending Payments <span class="badge-count">{{pendingPayments.length}} Action{{pendingPayments.length !== 1 ? 's' : ''}}</span></h3>
+        </div>
+        
+        <div *ngIf="pendingPayments.length === 0" class="empty-state">
+          <p>No pending payments</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">When workers complete tasks, they will appear here for you to verify and pay.</p>
+        </div>
+
+        <div *ngFor="let payment of pendingPayments" class="payment-item">
+          <div class="item-icon"></div>
+          <div class="item-details">
+            <h4>{{payment.taskTitle}}</h4>
+            <p>Worker: {{payment.workerName}} • Completed {{formatDate(payment.completedDate)}}</p>
+          </div>
+          <div class="item-actions">
+            <span class="amount">\${{payment.amount.toFixed(2)}}</span>
+            <button 
+              *ngIf="payment.status === 'WorkerCompleted'" 
+              class="btn btn-primary" 
+              (click)="verifyAndPay(payment.taskId)">
+              Verify & Pay
+            </button>
+            <button 
+              *ngIf="payment.status === 'Pending'" 
+              class="btn btn-primary" 
+              (click)="releasePayment(payment.id)">
+              Release Payment
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transaction History -->
+      <section class="section">
+        <div class="section-header">
+          <h3>Transaction History</h3>
+        </div>
+        
+        <div *ngIf="transactionHistory.length === 0" class="empty-state">
+          <p>No transaction history</p>
+        </div>
+
+        <div class="transaction-table" *ngIf="transactionHistory.length > 0">
+          <div class="table-header">
+            <div class="col">Service</div>
+            <div class="col">Worker</div>
+            <div class="col">Date</div>
+            <div class="col">Amount</div>
+            <div class="col">Transaction ID</div>
+          </div>
+          <div class="table-row" *ngFor="let transaction of transactionHistory">
+            <div class="col">{{transaction.taskTitle}}</div>
+            <div class="col">{{transaction.workerName}}</div>
+            <div class="col">{{formatDate(transaction.date)}}</div>
+            <div class="col amount">\${{transaction.amount.toFixed(2)}}</div>
+            <div class="col transaction-id">{{transaction.transactionId}}</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+      <!-- Total Spent Card -->
+      <div class="stats-card">
+        <div class="stats-title">Total Spent (This Month)</div>
+        <div class="stats-value">\${{summary.totalSpent.toFixed(2)}}</div>
+        <div class="stats-footer">
+          <div class="stat-item">
+            <strong>{{summary.servicesCount}}</strong> Services
+          </div>
+          <div class="stat-item">
+            <strong>\${{summary.totalPaid.toFixed(2)}}</strong> Paid
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Settings -->
+      <div class="settings-group">
+        <h3>Payment Settings</h3>
+        
+        <a href="#" class="setting-link">
+          <div class="setting-icon"></div>
+          <span>Billing Address</span>
+        </a>
+        <a href="#" class="setting-link">
+          <div class="setting-icon"></div>
+          <span>Security Settings</span>
+        </a>
+        <a href="#" class="setting-link">
+          <div class="setting-icon"></div>
+          <span>Payment Help</span>
+        </a>
+      </div>
+    </aside>
+  </div>
+</div>

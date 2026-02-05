@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component';
 import { LandingComponent } from './features/landing/landing.component';
 import { CustomerDashboardComponent } from './features/customer/dashboard/dashboard.component';
+import { PostTaskComponent } from './features/customer/post-task/post-task.component';
 import { WorkerDashboardComponent } from './features/worker/dashboard/dashboard.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
@@ -12,6 +13,7 @@ export class FeatureComponents {
     static Login = LoginComponent;
     static Register = RegisterComponent;
     static CustomerDashboard = CustomerDashboardComponent;
+    static PostTask = PostTaskComponent;
     static WorkerDashboard = WorkerDashboardComponent;
 }
 
@@ -32,6 +34,7 @@ export const routes: Routes = [
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: FeatureComponents.CustomerDashboard },
+            { path: 'post-task', component: FeatureComponents.PostTask },
             {
                 path: 'worker-dashboard',
                 loadComponent: () => import('./features/worker/dashboard/dashboard.component').then(m => m.WorkerDashboardComponent)
@@ -41,9 +44,46 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent)
             },
             {
+                path: 'financials',
+                loadComponent: () => import('./features/admin/finance/finance.component').then(m => m.FinanceComponent)
+            },
+            {
                 path: 'my-tasks', component: FeatureComponents.WorkerDashboard
             },
             { path: 'find-work', component: FeatureComponents.WorkerDashboard },
+            {
+                path: 'payments',
+                loadComponent: () => import('./features/customer/payments/payments.component').then(m => m.PaymentsComponent)
+            },
+            {
+                path: 'messages',
+                loadComponent: () => import('./features/customer/messages/messages.component').then(m => m.CustomerMessagesComponent)
+            },
+            {
+                path: 'earnings',
+                loadComponent: () => import('./features/worker/earnings/earnings.component').then(m => m.EarningsComponent)
+            },
+            {
+                path: 'financials',
+                loadComponent: () => import('./features/admin/finance/finance.component').then(m => m.FinanceComponent)
+            },
+        ]
+    },
+    {
+        path: 'worker',
+        children: [
+            { 
+                path: 'dashboard', 
+                loadComponent: () => import('./features/worker/dashboard/dashboard.component').then(m => m.WorkerDashboardComponent)
+            },
+            {
+                path: 'profile',
+                loadComponent: () => import('./features/worker/profile/profile.component').then(m => m.WorkerProfileComponent)
+            },
+            {
+                path: 'earnings',
+                loadComponent: () => import('./features/worker/earnings/earnings.component').then(m => m.EarningsComponent)
+            }
         ]
     },
     { path: '**', redirectTo: '' }

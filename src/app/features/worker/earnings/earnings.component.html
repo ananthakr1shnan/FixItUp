@@ -1,0 +1,67 @@
+<div class="earnings-container">
+  <header class="page-header">
+    <h2>Earnings & Payments</h2>
+  </header>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card available">
+      <div class="card-icon">💰</div>
+      <div class="card-content">
+        <div class="card-label">Available Balance</div>
+        <div class="card-value">\${{summary.availableBalance.toFixed(2)}}</div>
+        <div class="card-subtitle">Ready to withdraw</div>
+      </div>
+    </div>
+
+    <div class="summary-card pending">
+      <div class="card-icon">⏳</div>
+      <div class="card-content">
+        <div class="card-label">Pending Clearance</div>
+        <div class="card-value">\${{summary.pendingClearance.toFixed(2)}}</div>
+        <div class="card-subtitle">Awaiting customer release</div>
+      </div>
+    </div>
+
+    <div class="summary-card total">
+      <div class="card-icon">📊</div>
+      <div class="card-content">
+        <div class="card-label">Total Earned</div>
+        <div class="card-value">\${{summary.totalEarned.toFixed(2)}}</div>
+        <div class="card-subtitle">All time earnings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Earnings History -->
+  <section class="section">
+    <div class="section-header">
+      <h3>Earnings History</h3>
+    </div>
+
+    <div *ngIf="earningsHistory.length === 0" class="empty-state">
+      <p>No earnings history yet</p>
+    </div>
+
+    <div class="earnings-table" *ngIf="earningsHistory.length > 0">
+      <div class="table-header">
+        <div class="col">Task</div>
+        <div class="col">Customer</div>
+        <div class="col">Amount</div>
+        <div class="col">Status</div>
+        <div class="col">Date</div>
+      </div>
+      <div class="table-row" *ngFor="let earning of earningsHistory">
+        <div class="col">{{earning.taskTitle}}</div>
+        <div class="col">{{earning.customerName}}</div>
+        <div class="col amount">\${{earning.amount.toFixed(2)}}</div>
+        <div class="col">
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(earning.status)">
+            {{earning.status}}
+          </span>
+        </div>
+        <div class="col">{{formatDate(earning.date)}}</div>
+      </div>
+    </div>
+  </section>
+</div>

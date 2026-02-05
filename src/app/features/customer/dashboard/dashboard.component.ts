@@ -1,16 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TaskService, CustomerTask } from '../../../core/services/task.service';
+import { BidService } from '../../../core/services/bid.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Router } from '@angular/router';
+import { ChatComponent } from '../../../shared/components/chat.component';
 
 @Component({
   selector: 'app-customer-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChatComponent],
   template: `
     <div class="dashboard-container">
       <header class="page-header">
-        <h1>Good morning, Priya</h1>
-        <p>You have 2 active tasks and 1 completed task pending review.</p>
-        <button class="btn btn-primary">Post a New Task</button>
+        <h1>Good morning, {{ userName }}</h1>
+        <p>You have {{ activeTasks }} active tasks and {{ completedTasksPendingReview }} completed task{{ completedTasksPendingReview !== 1 ? 's' : '' }} pending review.</p>
+        <button class="btn btn-primary" (click)="postNewTask()">Post a New Task</button>
       </header>
 
       <div class="dashboard-grid">
@@ -18,7 +23,12 @@ import { CommonModule } from '@angular/common';
         <div class="task-list-column">
           <h3>Your Tasks</h3>
           
-          <div class="task-cards">
+          <div *ngIf="!tasks || tasks.length === 0" style="text-align: center; padding: 2rem; color: var(--text-medium);">
+            <p>No tasks yet. Post your first task to get started!</p>
+            <button class="btn btn-primary" style="margin-top: 1rem;" (click)="postNewTask()">Post a Task</button>
+          </div>
+          
+          <div class="task-cards" *ngIf="tasks && tasks.length > 0">
             <div 
               class="task-summary-card" 
               *ngFor="let task of tasks" 
@@ -64,106 +74,128 @@ import { CommonModule } from '@angular/common';
                      <span class="step-label">Posted</span>
                   </div>
                   
-                  <!-- Bidding -->
+                  <!-- Accepted/Bidding -->
                   <div class="segment-group">
-                     <div class="segment-bar" [class.completed]="selectedTask.progress >= 33" [class.active]="selectedTask.status === 'Bidding'"></div>
-                     <span class="step-label" [class.active-text]="selectedTask.status === 'Bidding'">Bidding</span>
+                     <div class="segment-bar" [class.completed]="selectedTask.status === 'Accepted' || selectedTask.status === 'InProgress' || selectedTask.status === 'WorkerCompleted' || selectedTask.status === 'Completed'" [class.active]="selectedTask.status === 'Accepted'"></div>
+                     <span class="step-label" [class.active-text]="selectedTask.status === 'Accepted'">Accepted</span>
                   </div>
 
                   <!-- In Progress -->
                   <div class="segment-group">
-                     <div class="segment-bar" [class.completed]="selectedTask.progress >= 66" [class.active]="selectedTask.status === 'InProgress'"></div>
+                     <div class="segment-bar" [class.completed]="selectedTask.status === 'InProgress' || selectedTask.status === 'WorkerCompleted' || selectedTask.status === 'Completed'" [class.active]="selectedTask.status === 'InProgress'"></div>
                      <span class="step-label" [class.active-text]="selectedTask.status === 'InProgress'">In Progress</span>
                   </div>
 
-                  <!-- Done -->
+                  <!-- Worker Completed -->
                   <div class="segment-group">
-                     <div class="segment-bar" [class.completed]="selectedTask.progress >= 100"></div>
-                     <span class="step-label">Done</span>
+                     <div class="segment-bar" [class.completed]="selectedTask.status === 'WorkerCompleted' || selectedTask.status === 'Completed'" [class.active]="selectedTask.status === 'WorkerCompleted'"></div>
+                     <span class="step-label" [class.active-text]="selectedTask.status === 'WorkerCompleted'">Work Done</span>
+                  </div>
+
+                  <!-- Completed -->
+                  <div class="segment-group">
+                     <div class="segment-bar" [class.completed]="selectedTask.status === 'Completed'"></div>
+                     <span class="step-label">Closed</span>
                   </div>
                </div>
             </div>
 
-            <!-- Bids List -->
-            <div class="bids-list">
-              <!-- Bid 1 -->
-              <div class="bid-card">
+            <!-- Bids List - Only show if task is not assigned yet -->
+            <div class="bids-list" *ngIf="selectedTask.status === 'Posted' && selectedTask.bids && selectedTask.bids.length > 0">
+              <h3>Bids Received</h3>
+              <div class="bid-card" *ngFor="let bid of selectedTask.bids.slice(0, 3)">
                 <div class="bid-worker">
                   <div class="worker-avatar">
-                     <img src="assets/avatar-placeholder.png" alt="Alex Miller">
-                     <div class="badge-top-rated">TOP RATED</div>
+                     <img src="assets/avatar-placeholder.png" [alt]="bid.workerName">
+                     <div class="badge-top-rated" *ngIf="bid.isTopRated">TOP RATED</div>
                   </div>
                   <div class="worker-info">
-                    <h3>Alex Miller</h3>
+                    <h3>{{ bid.workerName }}</h3>
                     <div class="rating">
-                       <i class="bi bi-star-fill"></i> 4.9 <span class="review-count">(124 reviews)</span>
-                       <span class="jobs-count">142 Jobs</span>
+                       <i class="bi bi-star-fill"></i> {{ bid.rating }} <span class="review-count">({{ bid.reviewCount }} reviews)</span>
+                       <span class="jobs-count">{{ bid.jobsCompleted }} Jobs</span>
                     </div>
                   </div>
                 </div>
                 <div class="bid-actions">
                    <div class="bid-price">
-                      <span class="amount">₹650</span>
-                      <span class="type">Fixed Price</span>
+                      <span class="amount">₹{{ bid.amount }}</span>
+                      <span class="type">{{ bid.priceType }}</span>
                    </div>
-                   <button class="btn btn-outline" (click)="chatWithWorker(1)">Chat</button>
-                   <button class="btn btn-primary" (click)="acceptBid(1)">Accept</button>
+                   <button class="btn btn-outline" (click)="chatWithWorker(bid.workerId)">Chat</button>
+                   <button class="btn btn-primary" (click)="acceptBid(bid.bidId)">Accept</button>
                 </div>
               </div>
-
-              <!-- Bid 2 -->
-              <div class="bid-card">
-                <div class="bid-worker">
-                  <div class="worker-avatar">
-                     <img src="assets/avatar-placeholder.png" alt="Sarah Jenning">
-                  </div>
-                  <div class="worker-info">
-                    <h3>Sarah Jenning</h3>
-                    <div class="rating">
-                       <i class="bi bi-star-fill"></i> 4.7 <span class="review-count">(45 reviews)</span>
-                       <span class="jobs-count">58 Jobs</span>
-                    </div>
-                  </div>
+            </div>
+            
+            <!-- Assigned Worker Info -->
+            <div class="assigned-worker-card" *ngIf="selectedTask.status !== 'Posted' && selectedTask.assignedWorker">
+              <h3>Assigned Worker</h3>
+              <div class="worker-details">
+                <div class="worker-avatar-large">
+                  <img src="assets/avatar-placeholder.png" [alt]="selectedTask.assignedWorker.name">
                 </div>
-                <div class="bid-actions">
-                   <div class="bid-price">
-                      <span class="amount">₹500</span>
-                      <span class="type">Est. 2 hrs</span>
-                   </div>
-                   <button class="btn btn-outline" (click)="chatWithWorker(2)">Chat</button>
-                   <button class="btn btn-primary" (click)="acceptBid(2)">Accept</button>
+                <div class="worker-info">
+                  <h4>{{ selectedTask.assignedWorker.name }}</h4>
+                  <div class="rating">
+                    <i class="bi bi-star-fill"></i> {{ selectedTask.assignedWorker.rating || 5.0 }}
+                  </div>
+                  <p>Accepted Bid: ₹{{ selectedTask.assignedWorker.bidAmount }}</p>
+                </div>
+                <button class="btn btn-primary" (click)="chatWithWorker(selectedTask.assignedWorker.workerId)">
+                  <i class="bi bi-chat-dots"></i> Message Worker
+                </button>
+              </div>
+              
+              <!-- Status Update Actions -->
+              <div class="status-actions" style="margin-top: 1.5rem;">
+                <!-- Waiting for worker to start -->
+                <div *ngIf="selectedTask.status === 'Accepted'" style="padding: 1rem; background: #eff6ff; border-radius: 8px; color: #1e40af;">
+                  <p style="margin: 0;"><strong>ℹ️ Waiting for worker to start</strong></p>
+                  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">The worker will start working on this task soon.</p>
+                </div>
+                
+                <!-- Work in progress -->
+                <div *ngIf="selectedTask.status === 'InProgress'" style="padding: 1rem; background: #fef3c7; border-radius: 8px; color: #92400e;">
+                  <p style="margin: 0;"><strong>🚀 Work in progress</strong></p>
+                  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">The worker is currently working on this task.</p>
+                </div>
+                
+                <!-- Worker completed - needs verification -->
+                <div *ngIf="selectedTask.status === 'WorkerCompleted'" style="padding: 1rem; background: #d1fae5; border-radius: 8px;">
+                  <p style="margin: 0; color: #065f46;"><strong>✓ Worker has completed the work</strong></p>
+                  <p style="margin: 0.5rem 0 1rem 0; font-size: 0.9rem; color: #047857;">Please verify the work and close the task to proceed with payment.</p>
+                  <button 
+                    class="btn btn-success" 
+                    (click)="updateTaskStatus(selectedTask.id, 'Completed')"
+                    style="background: #10b981; color: white; width: 100%;">
+                    ✓ Verify & Close Work
+                  </button>
                 </div>
               </div>
-
-              <!-- Bid 3 -->
-              <div class="bid-card">
-                <div class="bid-worker">
-                  <div class="worker-avatar">
-                     <img src="assets/avatar-placeholder.png" alt="David Chen">
-                  </div>
-                  <div class="worker-info">
-                    <h3>David Chen</h3>
-                    <div class="rating">
-                       <i class="bi bi-star-fill"></i> 4.5 <span class="review-count">(210 reviews)</span>
-                       <span class="jobs-count">305 Jobs</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="bid-actions">
-                   <div class="bid-price">
-                      <span class="amount">₹750</span>
-                      <span class="type">Fixed Price</span>
-                   </div>
-                   <button class="btn btn-outline" (click)="chatWithWorker(3)">Chat</button>
-                   <button class="btn btn-primary" (click)="acceptBid(3)">Accept</button>
-                </div>
-              </div>
+            </div>
+            
+            <div class="no-bids" *ngIf="selectedTask.status === 'Posted' && (!selectedTask.bids || selectedTask.bids.length === 0)" style="text-align: center; padding: 2rem; color: var(--text-light);">
+              <p>No bids received yet. Workers will start bidding soon!</p>
             </div>
               
-            <div class="view-more-bids">
-              <a href="javascript:void(0)">View 2 more bids</a>
+            <div class="view-more-bids" *ngIf="selectedTask.status === 'Posted' && selectedTask.bids && selectedTask.bids.length > 3">
+              <a href="javascript:void(0)">View {{ selectedTask.bids.length - 3 }} more bid{{ selectedTask.bids.length - 3 !== 1 ? 's' : '' }}</a>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Chat Modal -->
+      <div class="chat-modal" *ngIf="chatOpen" (click)="closeChatModal($event)">
+        <div class="chat-modal-content" (click)="$event.stopPropagation()">
+          <app-chat 
+            *ngIf="selectedChat"
+            [taskId]="selectedChat.taskId"
+            [otherUserId]="selectedChat.workerId"
+            [chatTitle]="selectedChat.workerName">
+          </app-chat>
+          <button class="close-modal-btn" (click)="closeChatModal($event)">×</button>
         </div>
       </div>
     </div>
@@ -461,101 +493,337 @@ import { CommonModule } from '@angular/common';
     .view-more-bids a { color: var(--primary-500); font-weight: 700; text-decoration: none; }
     .view-more-bids a:hover { text-decoration: underline; }
 
+    /* Assigned Worker Card */
+    .assigned-worker-card {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #F0FDF4;
+      border: 2px solid #86EFAC;
+      border-radius: var(--radius-lg);
+    }
+    
+    .assigned-worker-card h3 {
+      color: #166534;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .worker-details {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    
+    .worker-avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #D1D5DB;
+    }
+    
+    .worker-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .worker-details .worker-info {
+      flex: 1;
+    }
+    
+    .worker-details .worker-info h4 {
+      font-size: 1.2rem;
+      color: var(--secondary-900);
+      margin-bottom: 0.25rem;
+    }
+    
+    .worker-details .worker-info .rating {
+      color: #F59E0B;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .worker-details .worker-info p {
+      color: var(--text-medium);
+      font-size: 0.95rem;
+    }
+
+    /* Chat Modal */
+    .chat-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .chat-modal-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 700px;
+      height: 80vh;
+      position: relative;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .close-modal-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: white;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-medium);
+      cursor: pointer;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: all 0.2s ease;
+    }
+
+    .close-modal-btn:hover {
+      background: var(--background);
+      color: var(--secondary-900);
+    }
+
   `]
 })
-export class CustomerDashboardComponent {
+export class CustomerDashboardComponent implements OnInit {
+  tasks: any[] = [];
+  selectedTask: any = null;
+  userName = 'User';
+  activeTasks = 0;
+  completedTasksPendingReview = 0;
+  chatOpen: boolean = false;
+  selectedChat: { taskId: number, workerId: number, workerName: string } | null = null;
 
-  tasks: any[] = [
-    {
-      id: 1,
-      title: 'Master Bathroom Plumbing Fix',
-      location: 'Downtown, Apt 4B',
-      timeAgo: '2h ago',
-      status: 'Bidding',
-      statusLabel: 'Receiving Bids',
-      statusClass: 'status-bidding',
-      bidsCount: 5,
-      description: 'Looking for a certified plumber to fix a leaking pipe under the sink. Need it done urgently before the weekend. Please bring tools.',
-      postedDate: 'Oct 24',
-      progress: 33, // Bidding
-      category: 'Plumbing',
-      isUrgent: true,
-      bids: [
-        {
-          bidId: 101,
-          workerName: 'Alex Miller',
-          isTopRated: true,
-          rating: 4.9, // Extra frontend prop
-          reviewCount: 124, // Extra frontend prop
-          jobsCompleted: 142, // Extra frontend prop
-          amount: 85,
-          estimatedHours: 2,
-          priceType: 'Fixed Price', // Mapped from logic usually
-          trustScore: 98,
-          competitivenessScore: 'High',
-          avatarUrl: 'assets/mock-user-1.jpg'
-        },
-        {
-          bidId: 102,
-          workerName: 'Sarah Jenning',
-          isTopRated: false,
-          rating: 4.7,
-          reviewCount: 45,
-          jobsCompleted: 58,
-          amount: 70,
-          estimatedHours: 2,
-          priceType: 'Est. 2 hrs',
-          trustScore: 92,
-          competitivenessScore: 'Medium',
-          avatarUrl: 'assets/mock-user-2.jpg'
-        }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Living Room Wall Painting',
-      location: 'Scheduled: Tomorrow, 10am',
-      timeAgo: '1d ago',
-      status: 'InProgress',
-      statusLabel: 'In Progress',
-      statusClass: 'status-progress',
-      bidsCount: 0,
-      description: 'Need walls painted in eggshell white. Paint provided.',
-      postedDate: 'Oct 23',
-      progress: 66,
-      category: 'Painting',
-      isUrgent: false,
-      bids: []
-    },
-    {
-      id: 3,
-      title: 'Garage Door Maintenance',
-      location: 'Completed',
-      timeAgo: '5d ago',
-      status: 'Completed',
-      statusLabel: 'Completed',
-      statusClass: 'status-completed',
-      bidsCount: 0,
-      description: 'Regular maintenance check for garage door.',
-      postedDate: 'Oct 18',
-      progress: 100,
-      category: 'Maintenance',
-      isUrgent: false,
-      bids: []
+  constructor(
+    private taskService: TaskService,
+    private bidService: BidService,
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  async ngOnInit() {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      this.router.navigate(['/login']);
+      return;
     }
-  ];
 
-  selectedTask: any = this.tasks[0];
+    this.userName = currentUser.fullName.split(' ')[0];
+    await this.loadTasks();
+  }
+
+  async loadTasks() {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      console.log('No current user found');
+      return;
+    }
+
+    console.log('Loading tasks for customer:', currentUser.id);
+    
+    try {
+      const customerTasks = await this.taskService.getCustomerTasks(currentUser.id);
+      console.log('Received tasks from API:', customerTasks);
+      
+      if (!customerTasks || customerTasks.length === 0) {
+        console.log('No tasks returned from API');
+        this.tasks = [];
+        return;
+      }
+      
+      this.tasks = customerTasks.map(task => this.mapTaskForUI(task));
+      console.log('Mapped tasks for UI:', this.tasks);
+      
+      // Calculate summary stats
+      this.activeTasks = this.tasks.filter(t => 
+        t.status === 'Posted' || t.status === 'Bidding' || t.status === 'Accepted' || t.status === 'InProgress'
+      ).length;
+      
+      this.completedTasksPendingReview = this.tasks.filter(t => 
+        t.status === 'Completed'
+      ).length;
+      
+      // Auto-select first task if available
+      if (this.tasks.length > 0) {
+        this.selectedTask = this.tasks[0];
+        console.log('Selected first task:', this.selectedTask);
+      }
+      
+      // Force change detection
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Failed to load tasks:', error);
+      this.tasks = [];
+      this.cdr.detectChanges();
+    }
+  }
+
+  mapTaskForUI(task: CustomerTask) {
+    const statusMap: any = {
+      'Posted': { label: 'Posted', class: 'status-bidding' },
+      'Bidding': { label: 'Receiving Bids', class: 'status-bidding' },
+      'Accepted': { label: 'Accepted', class: 'status-progress' },
+      'InProgress': { label: 'In Progress', class: 'status-progress' },
+      'Completed': { label: 'Completed', class: 'status-completed' },
+      'UnderDispute': { label: 'Under Dispute', class: 'status-completed' }
+    };
+
+    const progressMap: any = {
+      'Posted': 0,
+      'Bidding': 33,
+      'Accepted': 33,
+      'InProgress': 66,
+      'Completed': 100,
+      'UnderDispute': 66
+    };
+    
+    // Find assigned worker if task is accepted
+    let assignedWorker = null;
+    if (task.assignedWorkerId && task.bids) {
+      const acceptedBid = task.bids.find(bid => bid.worker.id === task.assignedWorkerId);
+      if (acceptedBid) {
+        assignedWorker = {
+          workerId: acceptedBid.worker.id,
+          name: acceptedBid.worker.fullName,
+          rating: this.calculateRating(acceptedBid.worker.trustScore),
+          bidAmount: acceptedBid.amount
+        };
+      }
+    }
+
+    return {
+      id: task.id,
+      title: task.title,
+      location: task.location,
+      timeAgo: this.getTimeAgo(task.createdAt),
+      status: task.status,
+      statusLabel: statusMap[task.status]?.label || task.status,
+      statusClass: statusMap[task.status]?.class || 'status-bidding',
+      bidsCount: task.bidsCount,
+      description: task.description,
+      postedDate: this.formatDate(task.createdAt),
+      progress: progressMap[task.status] || 0,
+      category: task.category,
+      isUrgent: task.isUrgent,
+      assignedWorker: assignedWorker,
+      bids: task.bids.map(bid => ({
+        bidId: bid.id,
+        workerName: bid.worker.fullName,
+        isTopRated: bid.worker.isTopRated,
+        rating: this.calculateRating(bid.worker.trustScore),
+        reviewCount: bid.worker.jobsCompleted, // Using jobs completed as proxy
+        jobsCompleted: bid.worker.jobsCompleted,
+        amount: bid.amount,
+        estimatedHours: bid.estimatedHours,
+        priceType: bid.estimatedHours > 0 ? `Est. ${bid.estimatedHours} hrs` : 'Fixed Price',
+        trustScore: bid.worker.trustScore,
+        workerId: bid.worker.id
+      }))
+    };
+  }
+
+  getTimeAgo(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  calculateRating(trustScore: number): number {
+    // Convert trust score (0-100) to rating (0-5)
+    return Math.round((trustScore / 100) * 5 * 10) / 10;
+  }
 
   selectTask(task: any) {
     this.selectedTask = task;
   }
 
-  chatWithWorker(id: number) {
-    console.log('Chat with worker', id);
+  chatWithWorker(workerId: number) {
+    if (!this.selectedTask) return;
+    
+    // Get worker name from assigned worker or find in bids
+    let workerName = 'Worker';
+    if (this.selectedTask.assignedWorker && this.selectedTask.assignedWorker.workerId === workerId) {
+      workerName = this.selectedTask.assignedWorker.name;
+    } else if (this.selectedTask.bids) {
+      const bid = this.selectedTask.bids.find((b: any) => b.workerId === workerId);
+      if (bid) workerName = bid.workerName;
+    }
+
+    this.selectedChat = {
+      taskId: this.selectedTask.id,
+      workerId: workerId,
+      workerName: workerName
+    };
+    this.chatOpen = true;
   }
 
-  acceptBid(id: number) {
-    console.log('Accept bid', id);
+  closeChatModal(event?: any) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.chatOpen = false;
+    this.selectedChat = null;
+  }
+
+  async acceptBid(bidId: number) {
+    if (!confirm('Are you sure you want to accept this bid?')) return;
+
+    try {
+      await this.bidService.acceptBid(bidId);
+      alert('Bid accepted successfully!');
+      await this.loadTasks(); // Reload tasks to get updated status
+    } catch (error) {
+      console.error('Failed to accept bid:', error);
+      alert('Failed to accept bid. Please try again.');
+    }
+  }
+
+  async updateTaskStatus(taskId: number, newStatus: string) {
+    const statusMessages: any = {
+      'Completed': 'Verify and close this work? This will create a payment request.'
+    };
+
+    if (!confirm(statusMessages[newStatus] || 'Update task status?')) return;
+
+    try {
+      await this.taskService.updateTaskStatus(taskId, newStatus);
+      alert('Task completed successfully! Payment request created.');
+      await this.loadTasks(); // Reload tasks to get updated status
+    } catch (error) {
+      console.error('Failed to update task status:', error);
+      alert('Failed to update task status. Please try again.');
+    }
+  }
+
+  postNewTask() {
+    // TODO: Navigate to post task page
+    this.router.navigate(['/app/post-task']);
   }
 }

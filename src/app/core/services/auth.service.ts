@@ -49,6 +49,8 @@ export class AuthService {
                     fullName: userProfile.fullName,
                     email: userProfile.email,
                     role: userProfile.role,
+                    state: userProfile.state || '',
+                    city: userProfile.city || '',
                     isAcceptingJobs: userProfile.role === 'Worker', // Default or derived
                     trustScore: userProfile.trustScore || 0,
                     jobCompletionRate: userProfile.jobCompletionRate || 0,
