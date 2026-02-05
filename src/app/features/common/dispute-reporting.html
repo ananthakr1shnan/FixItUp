@@ -6,6 +6,10 @@
             <div class="header-text">
                 <h1>Report an Issue</h1>
                 <p *ngIf="step > 0">Task #{{ taskId }}</p>
+                <p *ngIf="step === 0" style="font-size: 0.7rem; color: #9CA3AF;">Select from your tasks</p>
+                <!-- Debug info: hide in prod -->
+                <p style="font-size: 0.6rem; color: #ccc;">Debug: Step={{step}}, Tasks={{userTasks.length}},
+                    LoadingTasks={{isLoadingTasks}}</p>
             </div>
             <div class="step-indicator" *ngIf="step > 0">Step {{ step }}/3</div>
         </div>

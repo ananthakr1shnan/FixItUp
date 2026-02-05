@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DisputeService, Dispute } from '../../../core/services/dispute.service';
@@ -14,6 +14,8 @@ import { AuthService } from '../../../core/services/auth.service';
         <div>
           <h2>My Disputes</h2>
           <p class="subtitle">View and manage your reported issues</p>
+          <!-- Debug info -->
+          <p style="font-size: 0.6rem; color: #ccc;">Debug: Disputes={{disputes.length}}</p>
         </div>
         <button class="btn-report" (click)="reportNewIssue()">
           <i class="bi bi-plus-circle"></i> Report New Issue
@@ -178,17 +180,24 @@ export class DisputeListComponent implements OnInit {
   constructor(
     private disputeService: DisputeService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit() {
     const user = this.authService.currentUser();
+    console.log('DisputeList: Current user:', user);
     if (user) {
       try {
+        console.log('DisputeList: Fetching disputes for user:', user.id);
         this.disputes = await this.disputeService.getUserDisputes(user.id);
+        console.log('DisputeList: Disputes received:', this.disputes);
+        this.cdr.detectChanges();
       } catch (err) {
         console.error('Failed to load disputes', err);
       }
+    } else {
+      console.warn('DisputeList: No user found in AuthService');
     }
   }
 

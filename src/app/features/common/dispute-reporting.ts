@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -39,7 +39,8 @@ export class DisputeReportingComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private taskService: TaskService,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.route.params.subscribe(params => {
       if (params['taskId']) {
@@ -75,9 +76,12 @@ export class DisputeReportingComponent implements OnInit {
 
     this.http.get<any[]>(endpoint).subscribe({
       next: (tasks) => {
-        console.log('DisputeReporting: tasks loaded', tasks);
-        this.userTasks = tasks;
+        console.log('DisputeReporting: tasks loaded raw', tasks);
+        // Ensure tasks is an array even if API returns a single object
+        this.userTasks = Array.isArray(tasks) ? tasks : (tasks ? [tasks] : []);
+        console.log('DisputeReporting: processed userTasks:', this.userTasks);
         this.isLoadingTasks = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('DisputeReporting: Error loading tasks', err);
