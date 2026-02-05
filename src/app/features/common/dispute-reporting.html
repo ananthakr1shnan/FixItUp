@@ -1,0 +1,152 @@
+<div class="report-wrapper">
+    <div class="report-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" (click)="prevStep()" *ngIf="step > 0">←</button>
+            <div class="header-text">
+                <h1>Report an Issue</h1>
+                <p *ngIf="step > 0">Task #{{ taskId }}</p>
+            </div>
+            <div class="step-indicator" *ngIf="step > 0">Step {{ step }}/3</div>
+        </div>
+
+        <!-- Task Information Card -->
+        <div class="task-info-card" *ngIf="taskDetails && !isLoadingTask">
+            <div class="task-info-header">
+                <i class="bi bi-briefcase-fill"></i>
+                <span class="task-title">{{ taskDetails.title || 'Task Details' }}</span>
+            </div>
+            <div class="task-info-details">
+                <div class="info-item">
+                    <span class="label">Category:</span>
+                    <span class="value">{{ taskDetails.category || 'General' }}</span>
+                </div>
+                <div class="info-item" *ngIf="taskDetails.location">
+                    <span class="label">Location:</span>
+                    <span class="value">{{ taskDetails.location }}</span>
+                </div>
+                <div class="info-item" *ngIf="taskDetails.budget">
+                    <span class="label">Budget:</span>
+                    <span class="value">₹{{ taskDetails.budget }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-info-card loading" *ngIf="isLoadingTask">
+            <p>Loading task details...</p>
+        </div>
+
+        <!-- Step 0: Task Selection -->
+        <div class="step-content" *ngIf="step === 0">
+            <h2>Select a Task</h2>
+            <p class="subtitle">Choose which task you'd like to report an issue for</p>
+
+            <div *ngIf="isLoadingTasks" style="text-align: center; padding: 2rem;">
+                <p>Loading your tasks...</p>
+            </div>
+
+            <div *ngIf="!isLoadingTasks && userTasks.length === 0" style="text-align: center; padding: 2rem;">
+                <p>No tasks available to report</p>
+            </div>
+
+            <div class="issue-grid" *ngIf="!isLoadingTasks && userTasks.length > 0">
+                <div class="issue-card" *ngFor="let task of userTasks" (click)="selectTask(task)"
+                    style="cursor: pointer;">
+                    <i class="bi bi-briefcase-fill" style="color: #8B4513; font-size: 2rem;"></i>
+                    <span style="font-weight: 600;">{{ task.title }}</span>
+                    <div style="font-size: 0.85rem; color: #6B7280; margin-top: 0.5rem;">
+                        <div>{{ task.category }}</div>
+                        <div>{{ task.city }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Issue Selection -->
+
+        <div class="step-content" *ngIf="step === 1">
+            <h2>What went wrong?</h2>
+            <p class="subtitle">Select the option that best describes the issue.</p>
+
+            <div class="issue-grid">
+                <div class="issue-card" *ngFor="let issue of issueTypes" [class.selected]="selectedIssue === issue.id"
+                    (click)="selectIssue(issue.id)">
+                    <i class="bi" [ngClass]="issue.icon" [style.color]="issue.color"></i>
+                    <span>{{ issue.label }}</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-primary full-width" [disabled]="!selectedIssue"
+                    (click)="nextStep()">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Description -->
+        <div class="step-content" *ngIf="step === 2">
+            <h2>Tell us more details</h2>
+            <p class="subtitle">Please describe what happened in detail.</p>
+
+            <textarea [(ngModel)]="description" placeholder="Describe the incident..." rows="6"></textarea>
+
+            <div class="actions">
+                <button class="btn-primary full-width" [disabled]="!description" (click)="nextStep()">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Evidence -->
+        <div class="step-content" *ngIf="step === 3">
+            <h2>Add Evidence</h2>
+            <p class="subtitle">Upload photos or screenshots to support your claim (Optional).</p>
+
+            <div class="upload-box">
+                <i class="bi bi-cloud-upload"></i>
+                <p>Click to upload or drag and drop</p>
+                <input type="file" (change)="onFileSelected($event)">
+            </div>
+
+            <div class="summary">
+                <p><strong>Issue:</strong> {{ selectedIssue }}</p>
+                <p class="desc-preview">"{{ description }}"</p>
+            </div>
+
+            <div class="certification-section">
+                <label class="certification-checkbox">
+                    <input type="checkbox" [(ngModel)]="certificationAccepted">
+                    <span>I certify that the information provided is accurate to the best of my knowledge and I
+                        understand that false claims may result in account suspension.</span>
+                </label>
+            </div>
+
+            <div class="actions">
+                <button class="btn-primary full-width" [disabled]="isSubmitting || !certificationAccepted"
+                    (click)="submitReport()">
+                    {{ isSubmitting ? 'Submitting...' : 'Submit Report' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="info-sidebar">
+        <div class="info-card">
+            <h3><i class="bi bi-shield-check"></i> FixItUp Guarantee</h3>
+            <p>Your payment is held in escrow until the dispute is resolved. We ensure fair outcomes.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>What happens next?</h3>
+            <ul>
+                <li>Both parties will be notified.</li>
+                <li>You can provide more evidence.</li>
+                <li>Our support team will mediate.</li>
+            </ul>
+        </div>
+
+        <div class="info-card emergency">
+            <h3>Emergency?</h3>
+            <p>If you feel unsafe, please contact local authorities immediately.</p>
+            <button class="btn-outline-red">Call Emergency Services</button>
+        </div>
+    </div>
+</div>

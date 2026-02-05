@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
     providedIn: 'root'
 })
 export class BidService {
-    private apiUrl = 'http://localhost:5245/api/bids';
+    private apiUrl = '/api/bids';
 
     constructor(private http: HttpClient) { }
 

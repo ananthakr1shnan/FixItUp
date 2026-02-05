@@ -10,9 +10,7 @@
     </div>
 
     <div class="conversations-list">
-      <div 
-        *ngFor="let conversation of conversations" 
-        class="conversation-card"
+      <div *ngFor="let conversation of conversations" class="conversation-card"
         (click)="selectConversation(conversation)">
         <div class="conversation-avatar">
           <div class="avatar-circle">{{ conversation.otherUser.name.charAt(0) }}</div>
@@ -37,10 +35,8 @@
     <button class="back-btn" (click)="backToList()">
       <i class="bi bi-arrow-left"></i> Back to Messages
     </button>
-    <app-chat 
-      [taskId]="selectedConversation.taskId"
-      [otherUserId]="selectedConversation.otherUser.id"
-      [chatTitle]="'Chat with ' + selectedConversation.otherUser.name">
+    <app-chat [taskId]="selectedConversation.taskId" [otherUserId]="selectedConversation.otherUser.id"
+      [chatTitle]="'Chat with ' + selectedConversation.otherUser.name" (chatClosed)="backToList()">
     </app-chat>
   </div>
 </div>

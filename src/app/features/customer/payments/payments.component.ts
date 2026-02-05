@@ -45,7 +45,7 @@ export class PaymentsComponent implements OnInit {
     totalPaid: 0
   };
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     // Get customerId from localStorage or auth service
@@ -59,7 +59,7 @@ export class PaymentsComponent implements OnInit {
     } else {
       console.error('No user data found in localStorage!');
     }
-    
+
     this.loadPendingPayments();
     this.loadTransactionHistory();
     this.loadSummary();
@@ -67,22 +67,22 @@ export class PaymentsComponent implements OnInit {
 
   loadPendingPayments() {
     console.log('Loading pending payments for customer:', this.customerId);
-    console.log('API URL:', `https://localhost:7043/api/payments/customer/${this.customerId}/pending`);
-    
-    this.http.get<PendingPayment[]>(`https://localhost:7043/api/payments/customer/${this.customerId}/pending`)
+    console.log('API URL:', `/api/payments/customer/${this.customerId}/pending`);
+
+    this.http.get<PendingPayment[]>(`/api/payments/customer/${this.customerId}/pending`)
       .subscribe({
         next: (data) => {
           console.log('✅ Pending payments API SUCCESS');
           console.log('Pending payments received:', data);
           console.log('Number of pending items:', data.length);
-          
+
           this.pendingPayments = [...data]; // Create new array reference
-          
+
           console.log('After assignment - pendingPayments length:', this.pendingPayments.length);
           console.log('pendingPayments array:', this.pendingPayments);
-          
+
           this.cdr.detectChanges(); // Manually trigger change detection
-          
+
           console.log('Change detection triggered');
         },
         error: (err) => {
@@ -97,15 +97,15 @@ export class PaymentsComponent implements OnInit {
 
   loadTransactionHistory() {
     console.log('Loading transaction history for customer:', this.customerId);
-    console.log('API URL:', `https://localhost:7043/api/payments/customer/${this.customerId}/history`);
-    
-    this.http.get<Transaction[]>(`https://localhost:7043/api/payments/customer/${this.customerId}/history`)
+    console.log('API URL:', `/api/payments/customer/${this.customerId}/history`);
+
+    this.http.get<Transaction[]>(`/api/payments/customer/${this.customerId}/history`)
       .subscribe({
         next: (data) => {
           console.log('✅ Transaction history API SUCCESS');
           console.log('Transaction history received:', data);
           console.log('Number of transactions:', data.length);
-          
+
           this.transactionHistory = [...data];
           this.cdr.detectChanges();
         },
@@ -119,14 +119,14 @@ export class PaymentsComponent implements OnInit {
 
   loadSummary() {
     console.log('Loading payment summary for customer:', this.customerId);
-    console.log('API URL:', `https://localhost:7043/api/payments/customer/${this.customerId}/summary`);
-    
-    this.http.get<PaymentSummary>(`https://localhost:7043/api/payments/customer/${this.customerId}/summary`)
+    console.log('API URL:', `/api/payments/customer/${this.customerId}/summary`);
+
+    this.http.get<PaymentSummary>(`/api/payments/customer/${this.customerId}/summary`)
       .subscribe({
         next: (data) => {
           console.log('✅ Payment summary API SUCCESS');
           console.log('Summary data:', data);
-          
+
           this.summary = { ...data };
           this.cdr.detectChanges();
         },
@@ -140,7 +140,7 @@ export class PaymentsComponent implements OnInit {
 
   releasePayment(paymentId: number) {
     if (confirm('Are you sure you want to release this payment?')) {
-      this.http.post(`https://localhost:7043/api/payments/release/${paymentId}`, {})
+      this.http.post(`/api/payments/release/${paymentId}`, {})
         .subscribe({
           next: () => {
             alert('Payment released successfully!');
@@ -160,7 +160,7 @@ export class PaymentsComponent implements OnInit {
   verifyAndPay(taskId: number) {
     if (confirm('Verify the work is completed properly and close this task? This will create a payment.')) {
       // First update task status to Completed
-      this.http.put(`https://localhost:7043/api/tasks/${taskId}/status`, { status: 'Completed' })
+      this.http.put(`/api/tasks/${taskId}/status`, { status: 'Completed' })
         .subscribe({
           next: () => {
             alert('Task verified and closed! You can now release the payment.');

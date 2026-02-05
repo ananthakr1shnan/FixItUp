@@ -81,7 +81,7 @@ export interface WorkerJob {
     providedIn: 'root'
 })
 export class TaskService {
-    private apiUrl = 'https://localhost:7043/api';
+    private apiUrl = '/api';
 
     constructor(private http: HttpClient) { }
 

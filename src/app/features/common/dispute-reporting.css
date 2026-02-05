@@ -1,0 +1,294 @@
+.report-wrapper {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+}
+
+.report-container {
+    flex: 2;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 1rem;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #4B5563;
+}
+
+.header-text h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.header-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6B7280;
+}
+
+.step-indicator {
+    margin-left: auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4F46E5;
+    background: #EEF2FF;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+}
+
+h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #1F2937;
+}
+
+.subtitle {
+    color: #6B7280;
+    margin-bottom: 1.5rem;
+}
+
+/* Task Info Card */
+.task-info-card {
+    background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.task-info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.task-info-header i {
+    font-size: 1.5rem;
+}
+
+.task-info-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.info-item {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.info-item .label {
+    opacity: 0.9;
+}
+
+.info-item .value {
+    font-weight: 600;
+}
+
+.task-info-card.loading {
+    background: #F3F4F6;
+    color: #6B7280;
+    text-align: center;
+}
+
+/* Issue Grid */
+.issue-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.issue-card {
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.issue-card:hover {
+    border-color: #9CA3AF;
+}
+
+.issue-card.selected {
+    border-color: #4F46E5;
+    background: #EEF2FF;
+}
+
+.issue-card i {
+    font-size: 2rem;
+}
+
+.issue-card span {
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Form Elements */
+textarea {
+    width: 100%;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 2rem;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px #EEF2FF;
+}
+
+.upload-box {
+    border: 2px dashed #D1D5DB;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    color: #6B7280;
+    margin-bottom: 2rem;
+    cursor: pointer;
+}
+
+.upload-box:hover {
+    border-color: #4F46E5;
+    background: #F9FAFB;
+}
+
+.upload-box i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Sidebar */
+.info-sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-card {
+    background: #F9FAFB;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+}
+
+.info-card h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #111827;
+}
+
+.info-card ul {
+    padding-left: 1.25rem;
+    color: #4B5563;
+    font-size: 0.9rem;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+}
+
+.info-card.emergency {
+    background: #FEE2E2;
+    border-color: #FCA5A5;
+}
+
+.btn-primary {
+    background: #4F46E5;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #4338CA;
+}
+
+.btn-primary:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.btn-outline-red {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #EF4444;
+    color: #EF4444;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Certification Section */
+.certification-section {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #FEF3C7;
+    border-radius: 8px;
+    border: 1px solid #FCD34D;
+}
+
+.certification-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #92400E;
+}
+
+.certification-checkbox input[type="checkbox"] {
+    margin-top: 0.25rem;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.certification-checkbox span {
+    line-height: 1.5;
+}
+
+.full-width {
+    width: 100%;
+}

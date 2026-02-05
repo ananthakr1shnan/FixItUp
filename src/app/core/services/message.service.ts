@@ -29,7 +29,7 @@ export interface Conversation {
     providedIn: 'root'
 })
 export class MessageService {
-    private apiUrl = 'https://localhost:7043/api/messages';
+    private apiUrl = '/api/messages';
 
     constructor(private http: HttpClient) { }
 

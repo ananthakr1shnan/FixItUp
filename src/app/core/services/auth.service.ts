@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AuthService {
     currentUser = signal<User | null>(null);
-    private apiUrl = 'http://localhost:5245/api';
+    private apiUrl = '/api';
 
     constructor(private router: Router, private http: HttpClient) {
         const storedUser = localStorage.getItem('currentUser');
@@ -24,7 +24,7 @@ export class AuthService {
             return true;
         } catch (error) {
             console.error('Registration failed', error);
-            return false;
+            throw error;
         }
     }
 

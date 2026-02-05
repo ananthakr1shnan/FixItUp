@@ -366,7 +366,7 @@ export class RegisterComponent implements OnInit {
 
   setRole(role: 'Customer' | 'Worker') {
     this.selectedRole = role;
-    
+
     // Update validation based on role
     if (role === 'Worker') {
       this.registerForm.get('state')?.setValidators(Validators.required);
@@ -375,7 +375,7 @@ export class RegisterComponent implements OnInit {
       this.registerForm.get('state')?.clearValidators();
       this.registerForm.get('city')?.clearValidators();
     }
-    
+
     this.registerForm.get('state')?.updateValueAndValidity();
     this.registerForm.get('city')?.updateValueAndValidity();
   }
@@ -413,13 +413,49 @@ export class RegisterComponent implements OnInit {
         userData.city = '';
       }
 
-      const success = await this.authService.register(userData);
-      this.isLoading = false;
+      console.group('Registration Payload');
+      console.log('User Data:', userData);
+      console.groupEnd();
 
-      if (success) {
-        this.router.navigate(['/login']);
-      } else {
-        alert('Registration failed. Please try again.');
+      try {
+        const success = await this.authService.register(userData);
+        this.isLoading = false;
+
+        if (success) {
+          this.router.navigate(['/login']);
+        } else {
+          // This block might not be reached if service throws, handled in catch below if service propagates
+          alert('Registration failed. Please try again.');
+        }
+      } catch (err: any) {
+        this.isLoading = false;
+        console.group('❌ REGISTRATION ERROR DETAILS');
+        console.error('Full Error Object:', err);
+        console.log('Status Code:', err.status);
+        console.log('Status Text:', err.statusText);
+        console.log('Response Body:', err.error);
+        console.log('Error Type:', typeof err.error);
+
+        if (err.error) {
+          console.log('Error Keys:', Object.keys(err.error));
+          if (err.error.errors) {
+            console.log('Validation Errors:', JSON.stringify(err.error.errors, null, 2));
+          }
+          if (err.error.title) {
+            console.log('Error Title:', err.error.title);
+          }
+        }
+        console.groupEnd();
+
+        if (err.status === 400 && err.error && err.error.errors) {
+          alert('Validation Error:\n\n' + JSON.stringify(err.error.errors, null, 2));
+        } else if (err.error && typeof err.error === 'string') {
+          alert('Registration failed: ' + err.error);
+        } else if (err.error && err.error.title) {
+          alert('Registration failed: ' + err.error.title);
+        } else {
+          alert('Registration failed. Check console for details.');
+        }
       }
     } else {
       this.registerForm.markAllAsTouched();

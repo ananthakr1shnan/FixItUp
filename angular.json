@@ -60,7 +60,8 @@
               "buildTarget": "FixItUp:build:production"
             },
             "development": {
-              "buildTarget": "FixItUp:build:development"
+              "buildTarget": "FixItUp:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

@@ -48,7 +48,12 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/admin/finance/finance.component').then(m => m.FinanceComponent)
             },
             {
-                path: 'my-tasks', component: FeatureComponents.WorkerDashboard
+                path: 'my-tasks',
+                component: FeatureComponents.CustomerDashboard  // For customers to view their posted tasks
+            },
+            {
+                path: 'my-jobs',
+                loadComponent: () => import('./features/worker/my-jobs/my-jobs.component').then(m => m.MyJobsComponent)
             },
             { path: 'find-work', component: FeatureComponents.WorkerDashboard },
             {
@@ -60,30 +65,29 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/customer/messages/messages.component').then(m => m.CustomerMessagesComponent)
             },
             {
-                path: 'earnings',
-                loadComponent: () => import('./features/worker/earnings/earnings.component').then(m => m.EarningsComponent)
+                path: 'disputes',
+                loadComponent: () => import('./features/common/dispute-list/dispute-list.component').then(m => m.DisputeListComponent)
             },
             {
-                path: 'financials',
-                loadComponent: () => import('./features/admin/finance/finance.component').then(m => m.FinanceComponent)
+                path: 'report-issue',
+                loadComponent: () => import('./features/common/dispute-reporting').then(m => m.DisputeReportingComponent)
             },
-        ]
-    },
-    {
-        path: 'worker',
-        children: [
-            { 
-                path: 'dashboard', 
-                loadComponent: () => import('./features/worker/dashboard/dashboard.component').then(m => m.WorkerDashboardComponent)
+            {
+                path: 'report-issue/:taskId',
+                loadComponent: () => import('./features/common/dispute-reporting').then(m => m.DisputeReportingComponent)
+            },
+            {
+                path: 'earnings',
+                loadComponent: () => import('./features/worker/earnings/earnings.component').then(m => m.EarningsComponent)
             },
             {
                 path: 'profile',
                 loadComponent: () => import('./features/worker/profile/profile.component').then(m => m.WorkerProfileComponent)
             },
             {
-                path: 'earnings',
-                loadComponent: () => import('./features/worker/earnings/earnings.component').then(m => m.EarningsComponent)
-            }
+                path: 'financials',
+                loadComponent: () => import('./features/admin/finance/finance.component').then(m => m.FinanceComponent)
+            },
         ]
     },
     { path: '**', redirectTo: '' }

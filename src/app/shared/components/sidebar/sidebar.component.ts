@@ -30,6 +30,9 @@ import { AuthService } from '../../../core/services/auth.service';
            <a routerLink="/app/payments" routerLinkActive="active" class="nav-item">
               Payments
            </a>
+           <a routerLink="/app/disputes" routerLinkActive="active" class="nav-item">
+              My Disputes
+           </a>
         </div>
 
         <!-- Worker Links -->
@@ -43,6 +46,12 @@ import { AuthService } from '../../../core/services/auth.service';
           </a>
           <a routerLink="/app/earnings" routerLinkActive="active" class="nav-item">
             Earnings
+          </a>
+           <a routerLink="/app/profile" routerLinkActive="active" class="nav-item">
+            Profile
+          </a>
+          <a routerLink="/app/disputes" routerLinkActive="active" class="nav-item">
+            My Disputes
           </a>
         </div>
 
@@ -273,6 +282,7 @@ export class SidebarComponent {
   }
 
   getInitials(name: string): string {
+    if (!name) return '??';
     return name
       .split(' ')
       .map(n => n[0])

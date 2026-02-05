@@ -20,7 +20,7 @@ export class CustomerMessagesComponent implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngOnInit() {
     const user = this.authService.currentUser();
@@ -45,7 +45,9 @@ export class CustomerMessagesComponent implements OnInit {
   }
 
   backToList() {
+    console.log('CustomerMessagesComponent: backToList called, clearing selectedConversation');
     this.selectedConversation = null;
+    this.cdr.detectChanges(); // Force UI update
     this.loadConversations();
   }
 
@@ -54,7 +56,7 @@ export class CustomerMessagesComponent implements OnInit {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-    
+
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
     return `${Math.floor(diffMins / 1440)}d ago`;

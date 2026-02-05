@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService, Message } from '../../core/services/message.service';
@@ -142,6 +142,8 @@ import { AuthService } from '../../core/services/auth.service';
       display: flex;
       gap: 0.75rem;
       background: white;
+      border: 1px solid var(--secondary-200);
+      background: white;
     }
 
     .message-input {
@@ -182,6 +184,7 @@ export class ChatComponent implements OnInit {
   @Input() taskId!: number;
   @Input() otherUserId!: number;
   @Input() chatTitle: string = 'Chat';
+  @Output() chatClosed = new EventEmitter<void>();
 
   messages: Message[] = [];
   newMessage: string = '';
@@ -191,7 +194,7 @@ export class ChatComponent implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngOnInit() {
     const user = this.authService.currentUser();
@@ -255,7 +258,7 @@ export class ChatComponent implements OnInit {
   }
 
   closeChat() {
-    // Emit event to parent component to close chat
-    window.history.back();
+    console.log('ChatComponent: Close button clicked, emitting chatClosed');
+    this.chatClosed.emit();
   }
 }
